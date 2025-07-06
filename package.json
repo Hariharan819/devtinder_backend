@@ -1,0 +1,19 @@
+{
+  "name": "devtinder_backend",
+  "version": "1.0.0",
+  "description": "DevTinder Backend",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Nodejs",
+    "Expressjs",
+    "Backend"
+  ],
+  "author": "Hariharan",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
