@@ -47,7 +47,7 @@ app.get("/feed", async (req, res) => {
 });
 
 //get user by request(from api ) matching email
-app.get("/userbyemail", async (req, res) => {
+app.get("/user", async (req, res) => {
   try {
     const useremail = req.body.emailId;
     const matchedemail = await User.find({ emailId: useremail });
@@ -60,7 +60,7 @@ app.get("/userbyemail", async (req, res) => {
 });
 
 //get user by request(from api) matching userId
-app.get("/userbyid", async (req, res) => {
+app.get("/user", async (req, res) => {
   try {
     const userid = req.body.userId;
     console.log(userid);
@@ -72,7 +72,7 @@ app.get("/userbyid", async (req, res) => {
 });
 
 //delete user by request(from api) matching userId
-app.delete("/delete", async (req, res) => {
+app.delete("/user", async (req, res) => {
   try {
     const userid = req.body.userId;
     console.log(userid);
@@ -85,10 +85,22 @@ app.delete("/delete", async (req, res) => {
 
 //update user by request(from api) matching userId
 
-app.patch("/userupdate", async (req, res) => {
+app.patch("/user", async (req, res) => {
   try {
     const userid = req.body.userId;
     const data = req.body;
+    //only these fields are updated by user after creating user profile
+    const allowedchanges = ["skills", "description", "profileUrl", "gender"];
+    const isupdateallowed = Object.keys(data).every((k) => {
+      allowedchanges.includes(k);
+    });
+    if (!isupdateallowed) {
+      throw new Error("updates are not allowed");
+    }
+    //skills more than 10 not allowed
+    if (data?.skills?.length > 10) {
+      throw new Error("only 10 skills are allowed");
+    }
     const updateduserdata = await User.findByIdAndUpdate(userid, data, {
       returnDocument: "after",
       runValidators: true,
