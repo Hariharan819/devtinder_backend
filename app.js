@@ -22,13 +22,13 @@ app.post("/signup", async (req, res) => {
   // const user = new User(userdata);
   //wrap it in try catch to avoid errors
   //use async and awit in all db related logics
-  try {
-    const user = new User(req.body);
-    await user.save();
-    res.send(" user data is added to our database");
-  } catch (error) {
-    res.status(400).send("error in saving user data");
-  }
+  // try {
+  const user = new User(req.body);
+  await user.save();
+  res.send(" user data is added to our database");
+  // } catch (error) {
+  // res.status(400).send("error in saving user data");
+  // }
 });
 
 //get all the user from data base
