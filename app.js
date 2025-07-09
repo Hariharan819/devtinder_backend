@@ -1,5 +1,7 @@
 const express = require("express");
 const connectDB = require("./src/config/database");
+const bcrypt = require("bcrypt");
+
 const app = express();
 
 //middleware for receiving body-data from post api
@@ -18,17 +20,62 @@ const User = require("./src/models/user");
 //add the userdata to database
 
 app.post("/signup", async (req, res) => {
+  //validate the data (req.body) //firstname min and max length and required ,lastname optional,valid email a,strong password
+  // (i done those in schema level ,if there is not done ,here we can done by creating a function and call it here called helper function)
+
   //need to create a instance of our model that is User
   // const user = new User(userdata);
   //wrap it in try catch to avoid errors
   //use async and awit in all db related logics
-  // try {
-  const user = new User(req.body);
-  await user.save();
-  res.send(" user data is added to our database");
-  // } catch (error) {
-  // res.status(400).send("error in saving user data");
-  // }
+
+  try {
+    const {
+      firstName,
+      password,
+      lastName,
+      emailId,
+      gender,
+      age,
+      profileUrl,
+      description,
+      skills,
+    } = req.body;
+    //encrypt the password and store it in db, here we use bcrypt npm package
+    const Hashpasword = await bcrypt.hash(password, 10);
+    const user = new User({
+      firstName,
+      lastName,
+      emailId,
+      gender,
+      age,
+      profileUrl,
+      description,
+      skills,
+      password: Hashpasword,
+    });
+    await user.save();
+    res.send(" user data is added to our database");
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+});
+
+app.post("/login", async (req, res) => {
+  try {
+    const { password, emailId } = req.body;
+    const user = await User.findOne({ emailId: emailId });
+    if (!user) {
+      throw new Error("Invalid Credtials");
+    }
+    const ispasswordvalid = await bcrypt.compare(password, user.password);
+    if (ispasswordvalid) {
+      res.send("Login Successfully");
+    } else {
+      throw new Error("Invalid credtials");
+    }
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
 });
 
 //get all the user from data base
@@ -42,7 +89,7 @@ app.get("/feed", async (req, res) => {
       res.send(usersdata);
     }
   } catch (error) {
-    res.status(400).send("no users");
+    res.status(400).send(error.message);
   }
 });
 
@@ -53,9 +100,7 @@ app.get("/user", async (req, res) => {
     const matchedemail = await User.find({ emailId: useremail });
     res.send(matchedemail);
   } catch (error) {
-    res
-      .status(404)
-      .send("something went wrong on finding request  email user ");
+    res.status(404).send(error.message);
   }
 });
 
@@ -67,7 +112,7 @@ app.get("/user", async (req, res) => {
     const matchedId = await User.findById(userid);
     res.send(matchedId);
   } catch (error) {
-    res.status(404).send("something went wrong on finding request userById");
+    res.status(404).send(error.message);
   }
 });
 
@@ -79,7 +124,7 @@ app.delete("/user", async (req, res) => {
     const matchedId = await User.findByIdAndDelete(userid);
     res.send("this userid data is deleted");
   } catch (error) {
-    res.status(404).send("something went wrong on deleting request userById");
+    res.status(404).send(error.message);
   }
 });
 
@@ -107,7 +152,7 @@ app.patch("/user", async (req, res) => {
     });
     res.send("user data is updated successfully ");
   } catch (error) {
-    res.status(404).send("something went wrong on updating  user data");
+    res.status(404).send(error.message);
   }
 });
 
