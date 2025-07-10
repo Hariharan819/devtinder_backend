@@ -1,12 +1,13 @@
 const express = require("express");
 const connectDB = require("./src/config/database");
 const bcrypt = require("bcrypt");
-
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
 const app = express();
 
 //middleware for receiving body-data from post api
 app.use(express.json());
-
+app.use(cookieParser());
 //require  our db model
 const User = require("./src/models/user");
 
@@ -64,11 +65,22 @@ app.post("/login", async (req, res) => {
   try {
     const { password, emailId } = req.body;
     const user = await User.findOne({ emailId: emailId });
+    const userid = user._id;
+    // console.log(userid);
     if (!user) {
       throw new Error("Invalid Credtials");
     }
     const ispasswordvalid = await bcrypt.compare(password, user.password);
+
+    // const userid = user.userId;
+
     if (ispasswordvalid) {
+      //
+      const token = await jwt.sign({ userid }, "ScreatKey@Dev");
+      //add the token to the cookie and send back to the user
+      //name of cookie and token
+      res.cookie("token", token);
+
       res.send("Login Successfully");
     } else {
       throw new Error("Invalid credtials");
@@ -78,13 +90,33 @@ app.post("/login", async (req, res) => {
   }
 });
 
+app.get("/profile", async (req, res) => {
+  try {
+    const cookies = req.cookies;
+    const { token } = cookies;
+    if (!token) {
+      throw new Error("Invalid Token");
+    }
+    const decodedata = await jwt.verify(token, "ScreatKey@Dev");
+    const userid = decodedata.userid;
+
+    const user = await User.findById(userid);
+    if (!user) {
+      throw new Error("user does not exist ");
+    }
+
+    res.send(user);
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
 //get all the user from data base
 app.get("/feed", async (req, res) => {
   try {
     const usersdata = await User.find({});
     //becoz it is array so it is best way to avoid empty array
     if (usersdata.length === 0) {
-      res.res.status(404).send("no  user is there with matching email ");
+      res.status(404).send("no  user is there with matching email ");
     } else {
       res.send(usersdata);
     }
