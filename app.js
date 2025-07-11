@@ -10,6 +10,7 @@ app.use(express.json());
 app.use(cookieParser());
 //require  our db model
 const User = require("./src/models/user");
+const UserAuth = require("./src/middleware/UserAuth");
 
 // const userdata = {
 //   firstName: "hariharan",
@@ -90,20 +91,20 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.get("/profile", async (req, res) => {
+app.get("/profile", UserAuth, async (req, res) => {
   try {
-    const cookies = req.cookies;
-    const { token } = cookies;
-    if (!token) {
-      throw new Error("Invalid Token");
-    }
-    const decodedata = await jwt.verify(token, "ScreatKey@Dev");
-    const userid = decodedata.userid;
-
-    const user = await User.findById(userid);
-    if (!user) {
-      throw new Error("user does not exist ");
-    }
+    // const cookies = req.cookies;
+    // const { token } = cookies;
+    // if (!token) {
+    //   throw new Error("Invalid Token");
+    // }
+    // const decodedata = await jwt.verify(token, "ScreatKey@Dev");
+    // const userid = decodedata.userid;
+    const user = req.user;
+    // const user = await User.findById(userid);
+    // if (!user) {
+    //   throw new Error("user does not exist ");
+    // }
 
     res.send(user);
   } catch (err) {
