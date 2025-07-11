@@ -77,10 +77,17 @@ app.post("/login", async (req, res) => {
 
     if (ispasswordvalid) {
       //
-      const token = await jwt.sign({ userid }, "ScreatKey@Dev");
+      const token = await jwt.sign({ userid }, "ScreatKey@Dev", {
+        expiresIn: "7d",
+      });
+
+      // const token = await user.getjwt();
+      //gethwt is usecheme method used for proper code refraction
+
       //add the token to the cookie and send back to the user
       //name of cookie and token
-      res.cookie("token", token);
+      res.cookie("token", token),
+        { expires: new Date(Date.now() + 7 * 3600000) };
 
       res.send("Login Successfully");
     } else {
