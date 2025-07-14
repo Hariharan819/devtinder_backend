@@ -51,7 +51,6 @@ ProfileRoute.patch("/profile/edit", UserAuth, async (req, res) => {
     // });
     // await LoggedInUser.save();
 
-    
     const Requestupdatefromuser = Object.keys(data);
 
     const emailIdvalidation = Requestupdatefromuser.includes("emailId");
