@@ -50,14 +50,23 @@ ProfileRoute.patch("/profile/edit", UserAuth, async (req, res) => {
     //   LoggedInUser[k] = data[k];
     // });
     // await LoggedInUser.save();
+
+    
     const Requestupdatefromuser = Object.keys(data);
-    // console.log(Requestupdatefromuser);
 
     const emailIdvalidation = Requestupdatefromuser.includes("emailId");
 
     const Profileurldvalidation = Requestupdatefromuser.includes("profileUrl");
 
-    const genderdvalidation = Requestupdatefromuser.includes("profileUrl");
+    const genderdvalidation = Requestupdatefromuser.includes("gender");
+
+    const firstnamevalidation = Requestupdatefromuser.includes("firstName");
+
+    const skillsvalidation = Requestupdatefromuser.includes("skills");
+
+    const descriptionvalidation = Requestupdatefromuser.includes("description");
+
+    const agevalidation = Requestupdatefromuser.includes("age");
 
     if (emailIdvalidation) {
       if (!validator.isEmail(data.emailId)) {
@@ -76,13 +85,63 @@ ProfileRoute.patch("/profile/edit", UserAuth, async (req, res) => {
     }
 
     if (genderdvalidation) {
-      if (!["male", "female", "others"].includes(value)) {
+      const allowedgenders = ["male", "female", "others"].includes(data.gender);
+      if (!allowedgenders) {
         throw new Error("Invalid Gender data");
       }
       LoggedInUser.gender = data.gender;
       await LoggedInUser.save();
     }
 
+    if (firstnamevalidation) {
+      if (data.firstName.length < 4) {
+        throw new Error("User name is shorter than 4 letters ");
+      }
+      if (data.firstName.length > 50) {
+        throw new Error("User name is higher than 50 letters ");
+      }
+      LoggedInUser.firstName = data.firstName;
+      await LoggedInUser.save();
+    }
+
+    if (skillsvalidation) {
+      if (data.skills.length > 11) {
+        throw new Error("skills limit is existed plz enter below 10 skills ");
+      }
+      if (data.skills.length < 2) {
+        throw new Error("plz enter atleast 2 skills ");
+      }
+      LoggedInUser.skills = data.skills;
+      await LoggedInUser.save();
+    }
+
+    if (descriptionvalidation) {
+      // const trimmedDescription = data.description.trim().replace(/\s+/g, " ");
+      const trimmedDescription = String(data.description)
+        .trim()
+        .replace(/\s+/g, " ");
+
+      if (trimmedDescription.length > 1000) {
+        throw new Error("short description is allowed");
+      }
+      LoggedInUser.description = data.description;
+      await LoggedInUser.save();
+    }
+
+    if (agevalidation) {
+      if (typeof data.age !== "number") {
+        throw new Error("Age must be a number");
+      }
+
+      if (data.age > 100) {
+        throw new Error(" Age must be below 100");
+      }
+      if (data.age < 18) {
+        throw new Error("Age must be above 18");
+      }
+      LoggedInUser.age = data.age;
+      await LoggedInUser.save();
+    }
     res.send(`${LoggedInUser.firstName} , your profile has been updated`);
   } catch (error) {
     res.status(404).send(error.message);

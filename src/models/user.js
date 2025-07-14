@@ -14,6 +14,7 @@ const Userschema = new mongoose.Schema(
     },
     lastName: {
       type: String,
+      maxLength: 25,
     },
     emailId: {
       type: String,
@@ -29,6 +30,7 @@ const Userschema = new mongoose.Schema(
     },
     password: {
       type: String,
+      required: true,
       minLength: 8,
 
       validate(value) {
@@ -65,7 +67,6 @@ const Userschema = new mongoose.Schema(
     },
     description: {
       type: String,
-      maxLength: 250,
       default: "Iam a pro Dev",
     },
     skills: {
