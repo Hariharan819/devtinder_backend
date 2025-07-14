@@ -2,6 +2,7 @@ const express = require("express");
 const ProfileRoute = express.Router();
 const UserAuth = require("../middleware/UserAuth");
 const validator = require("validator");
+const bcrypt = require("bcrypt");
 
 ProfileRoute.get("/profile/view", UserAuth, async (req, res) => {
   try {
@@ -21,6 +22,25 @@ ProfileRoute.get("/profile/view", UserAuth, async (req, res) => {
     res.send(user);
   } catch (err) {
     res.status(400).send(err.message);
+  }
+});
+
+ProfileRoute.patch("/forgotpassword", UserAuth, async (req, res) => {
+  //data.password -->validation
+  //encryption
+  //storing
+  try {
+    const data = req.body;
+    LoggedInUser = req.user;
+    if (!validator.isStrongPassword(data.password)) {
+      throw new Error("Plz Enter the strong password :" + data.password);
+    }
+    const Hashpasword = await bcrypt.hash(data.password, 10);
+    LoggedInUser.password = Hashpasword;
+    await LoggedInUser.save();
+    res.send("password has been updated successfully");
+  } catch (err) {
+    res.status(404).send(err.message);
   }
 });
 

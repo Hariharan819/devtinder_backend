@@ -2,6 +2,7 @@ const express = require("express");
 const AuthRoute = express.Router();
 const bcrypt = require("bcrypt");
 
+
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 
@@ -89,4 +90,6 @@ AuthRoute.post("/logout", async (req, res) => {
     })
     .send("logout Successfully");
 });
+
+
 module.exports = AuthRoute;
