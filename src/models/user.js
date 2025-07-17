@@ -79,7 +79,7 @@ const Userschema = new mongoose.Schema(
   }
 );
 
-Userschema.methods.getjwt = async function () {
+Userschema.methods.getjwt = function () {
   const user = this;
   const userid = this._id;
   const token = jwt.sign({ userid }, "ScreatKey@Dev", {

@@ -1,8 +1,7 @@
 const express = require("express");
 const connectDB = require("./src/config/database");
-const bcrypt = require("bcrypt");
+
 const cookieParser = require("cookie-parser");
-const jwt = require("jsonwebtoken");
 const app = express();
 
 //middleware for receiving body-data from post api
@@ -16,11 +15,11 @@ const User = require("./src/models/user");
 
 const AuthRoute = require("./src/routes/AuthRoute");
 const ProfileRoute = require("./src/routes/ProfileRoute");
+const RequestRouter = require("./src/routes/request");
 
 app.use("/", AuthRoute);
 app.use("/", ProfileRoute);
-
-
+app.use("/", RequestRouter);
 
 //connect db and after that server listen to the port 3000
 connectDB()

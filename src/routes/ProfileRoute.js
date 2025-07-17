@@ -25,7 +25,7 @@ ProfileRoute.get("/profile/view", UserAuth, async (req, res) => {
   }
 });
 
-ProfileRoute.patch("/forgotpassword", UserAuth, async (req, res) => {
+ProfileRoute.patch("/profile/forgotpassword", UserAuth, async (req, res) => {
   //data.password -->validation
   //encryption
   //storing
@@ -161,6 +161,11 @@ ProfileRoute.patch("/profile/edit", UserAuth, async (req, res) => {
       LoggedInUser.age = data.age;
       await LoggedInUser.save();
     }
+
+    // Object.keys(data).forEach((k) => {
+    //   LoggedInUser[k] = data[k];
+    // });
+    // await LoggedInUser.save();
     res.send(`${LoggedInUser.firstName} , your profile has been updated`);
   } catch (error) {
     res.status(404).send(error.message);
