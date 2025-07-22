@@ -90,6 +90,6 @@ Userschema.methods.getjwt = function () {
 };
 
 //module
-// const User = mongoose.model("User", Userschema);
-// module.exports = User;
-module.exports = mongoose.model("User", Userschema);
+const User = mongoose.model("User", Userschema);
+module.exports = User;
+// module.exports = mongoose.model("User", Userschema);

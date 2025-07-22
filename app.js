@@ -11,15 +11,14 @@ app.use(cookieParser());
 
 //require  our db model
 
-const User = require("./src/models/user");
-
 const AuthRoute = require("./src/routes/AuthRoute");
 const ProfileRoute = require("./src/routes/ProfileRoute");
 const RequestRouter = require("./src/routes/request");
-
+const UserRouter = require("./src/routes/user");
 app.use("/", AuthRoute);
 app.use("/", ProfileRoute);
 app.use("/", RequestRouter);
+app.use("/", UserRouter);
 
 //connect db and after that server listen to the port 3000
 connectDB()
