@@ -35,16 +35,32 @@ UserRouter.get("/user/allconncetions", UserAuth, async (req, res) => {
         { toUserId: LoggedInUser._id, status: "Accepted" },
         { fromUserId: LoggedInUser._id, status: "Accepted" },
       ],
-    }).populate("fromUserId", [
-      "firstName",
-      "lastName",
-      "age",
-      "gender",
-      "skills",
-      "profileUrl",
-      "description",
-    ]);
-    const fromuserdata = Acceptedconnections.map((r) => r.fromUserId);
+    })
+      .populate("fromUserId", [
+        "firstName",
+        "lastName",
+        "age",
+        "gender",
+        "skills",
+        "profileUrl",
+        "description",
+      ])
+      .populate("toUserId", [
+        "firstName",
+        "lastName",
+        "age",
+        "gender",
+        "skills",
+        "profileUrl",
+        "description",
+      ]);
+
+    const fromuserdata = Acceptedconnections.map((r) => {
+      if (r.fromUserId._id.equals(LoggedInUser._id)) {
+        return r.toUserId;
+      }
+      return r.fromUserId;
+    });
 
     res.send(fromuserdata);
   } catch (err) {
