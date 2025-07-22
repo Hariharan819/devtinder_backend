@@ -48,4 +48,41 @@ RequestRouter.post(
   }
 );
 
+RequestRouter.post(
+  "/request/review/:status/:requestId",
+  UserAuth,
+  async (req, res) => {
+    //need to find the connecton request by using id which is requestId
+
+    // the touserID must be equal to loggedin user id
+
+    // the allowed status must be Accepted and Rejected
+
+    //the status Interested means we need to proceed further
+
+    try {
+      const LoggedInUser = req.user;
+      const status = req.params.status;
+      const requestid = req.params.requestId;
+      const allowedStatus = ["Accepted", "Rejected"];
+      const validstatus = allowedStatus.includes(status);
+      if (!validstatus) {
+        throw new Error(" Invalid Status Type");
+      }
+      const validtouser = await Connectionrequestsmodule.findOne({
+        _id: requestid,
+        toUserId: LoggedInUser._id,
+        status: "Interested",
+      });
+      if (!validtouser) {
+        throw new Error("Conncetion Request not Found");
+      }
+      validtouser.status = status;
+      await validtouser.save();
+      res.send(`Connection Request is ${status}`);
+    } catch (err) {
+      res.status(400).send("Error " + err.message);
+    }
+  }
+);
 module.exports = RequestRouter;
