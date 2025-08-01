@@ -1,6 +1,7 @@
 const express = require("express");
 const UserAuth = require("../middleware/UserAuth");
 const Connectionrequestsmodule = require("../models/connectionrequest");
+const User = require("../models/user");
 const UserRouter = express.Router();
 
 UserRouter.get("/user/requests/received", UserAuth, async (req, res) => {
@@ -63,6 +64,28 @@ UserRouter.get("/user/allconncetions", UserAuth, async (req, res) => {
     });
 
     res.send(fromuserdata);
+  } catch (err) {
+    res.status(400).send("Error: " + err.message);
+  }
+});
+UserRouter.get("/feed", UserAuth, async (req, res) => {
+  try {
+    const currentuser = req.user;
+    const currentuserId = currentuser._id;
+    // console.log(currentuserId);
+
+    const currentuserconnections = await Connectionrequestsmodule.find({
+      $or: [
+        {
+          fromUserId: currentuserId,
+        },
+        {
+          toUserId: currentuserId,
+        },
+      ],
+    }).select("fromUserId toUserId");
+
+    res.send(currentuserconnections);
   } catch (err) {
     res.status(400).send("Error: " + err.message);
   }
