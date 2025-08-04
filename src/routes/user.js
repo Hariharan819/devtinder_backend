@@ -72,7 +72,10 @@ UserRouter.get("/feed", UserAuth, async (req, res) => {
   try {
     const currentuser = req.user;
     const currentuserId = currentuser._id;
-    // console.log(currentuserId);
+    const page = parseInt(req.query.page) || 1;
+    let limit = parseInt(req.query.limit) || 10;
+    limit = limit > 20 ? 20 : limit;
+    const skip = (page - 1) * limit;
 
     const currentuserconnections = await Connectionrequestsmodule.find({
       $or: [
@@ -85,7 +88,35 @@ UserRouter.get("/feed", UserAuth, async (req, res) => {
       ],
     }).select("fromUserId toUserId");
 
-    res.send(currentuserconnections);
+    const hiddenusers = new Set();
+    currentuserconnections.forEach((connection) => {
+      hiddenusers.add(connection.fromUserId.toString());
+      hiddenusers.add(connection.toUserId.toString());
+    });
+
+    const feedusers = await User.find({
+      $and: [
+        {
+          _id: { $nin: Array.from(hiddenusers) },
+        },
+        {
+          _id: { $ne: currentuserId },
+        },
+      ],
+    })
+      .select([
+        "firstName",
+        "lastName",
+        "age",
+        "gender",
+        "skills",
+        "profileUrl",
+        "description",
+      ])
+      .skip(skip)
+      .limit(limit);
+
+    res.send(feedusers);
   } catch (err) {
     res.status(400).send("Error: " + err.message);
   }
