@@ -2,7 +2,6 @@ const express = require("express");
 const AuthRoute = express.Router();
 const bcrypt = require("bcrypt");
 
-
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 
@@ -51,6 +50,15 @@ AuthRoute.post("/login", async (req, res) => {
   try {
     const { password, emailId } = req.body;
     const user = await User.findOne({ emailId: emailId });
+    const userdata = await User.findOne({ emailId: emailId }).select([
+      "firstName",
+      "lastName",
+      "age",
+      "gender",
+      "skills",
+      "profileUrl",
+      "description",
+    ]);
     const userid = user._id;
     // console.log(userid);
     if (!user) {
@@ -72,9 +80,9 @@ AuthRoute.post("/login", async (req, res) => {
       //add the token to the cookie and send back to the user
       //name of cookie and token
       res.cookie("token", token),
-        { expires: new Date(Date.now() + 7 * 3600000) };
+        { expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) };
 
-      res.send("Login Successfully");
+      res.send(userdata);
     } else {
       throw new Error("Invalid credtials");
     }
@@ -90,6 +98,5 @@ AuthRoute.post("/logout", async (req, res) => {
     })
     .send("logout Successfully");
 });
-
 
 module.exports = AuthRoute;

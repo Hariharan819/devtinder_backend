@@ -3,12 +3,17 @@ const connectDB = require("./src/config/database");
 
 const cookieParser = require("cookie-parser");
 const app = express();
-
+const cors = require("cors");
 //middleware for receiving body-data from post api
 app.use(express.json());
 //reading cookie from req.body
 app.use(cookieParser());
-
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 //require  our db model
 
 const AuthRoute = require("./src/routes/AuthRoute");
