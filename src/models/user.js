@@ -58,7 +58,7 @@ const Userschema = new mongoose.Schema(
     profileUrl: {
       type: String,
       trim: true,
-      default: "https://www.flaticon.com/free-icon/profile_3135715",
+      default: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
       validate(value) {
         if (!validator.isURL(value)) {
           throw new Error("Invalid Url" + value);
