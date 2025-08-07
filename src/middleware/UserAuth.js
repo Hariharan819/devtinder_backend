@@ -12,7 +12,7 @@ const UserAuth = async (req, res, next) => {
     //take token from cookies
     const { token } = cookies;
     if (!token) {
-      throw new Error("Invalid Token");
+      res.status(401).send("Invalid Token , Please Login Again");
     }
     //decode the token to get hide data which is user id
     const decodedata = await jwt.verify(token, "ScreatKey@Dev");
