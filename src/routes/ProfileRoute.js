@@ -4,7 +4,7 @@ const UserAuth = require("../middleware/UserAuth");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
 
-ProfileRoute.get("/profile/view", UserAuth, async (req, res) => {
+ProfileRoute.get("/view", UserAuth, async (req, res) => {
   try {
     // const cookies = req.cookies;
     // const { token } = cookies;
@@ -25,7 +25,7 @@ ProfileRoute.get("/profile/view", UserAuth, async (req, res) => {
   }
 });
 
-ProfileRoute.patch("/profile/forgotpassword", UserAuth, async (req, res) => {
+ProfileRoute.patch("/forgotpassword", UserAuth, async (req, res) => {
   //data.password -->validation
   //encryption
   //storing
@@ -44,7 +44,7 @@ ProfileRoute.patch("/profile/forgotpassword", UserAuth, async (req, res) => {
   }
 });
 
-ProfileRoute.patch("/profile/edit", UserAuth, async (req, res) => {
+ProfileRoute.patch("/edit", UserAuth, async (req, res) => {
   try {
     const data = req.body;
     const LoggedInUser = req.user; //user of current loged in user
@@ -53,7 +53,6 @@ ProfileRoute.patch("/profile/edit", UserAuth, async (req, res) => {
     const allowedchanges = [
       "firstName",
       "lastName",
-      "emailId",
       "age",
       "skills",
       "description",
@@ -73,8 +72,6 @@ ProfileRoute.patch("/profile/edit", UserAuth, async (req, res) => {
 
     const Requestupdatefromuser = Object.keys(data);
 
-    const emailIdvalidation = Requestupdatefromuser.includes("emailId");
-
     const Profileurldvalidation = Requestupdatefromuser.includes("profileUrl");
 
     const genderdvalidation = Requestupdatefromuser.includes("gender");
@@ -87,13 +84,13 @@ ProfileRoute.patch("/profile/edit", UserAuth, async (req, res) => {
 
     const agevalidation = Requestupdatefromuser.includes("age");
 
-    if (emailIdvalidation) {
-      if (!validator.isEmail(data.emailId)) {
-        throw new Error("Invalid Email address:" + data.emailId);
-      }
-      LoggedInUser.emailId = data.emailId;
-      await LoggedInUser.save();
-    }
+    // if (emailIdvalidation) {
+    //   if (!validator.isEmail(data.emailId)) {
+    //     throw new Error("Invalid Email address:" + data.emailId);
+    //   }
+    //   LoggedInUser.emailId = data.emailId;
+    //   await LoggedInUser.save();
+    // }
 
     if (Profileurldvalidation) {
       if (!validator.isURL(data.profileUrl)) {
@@ -104,7 +101,17 @@ ProfileRoute.patch("/profile/edit", UserAuth, async (req, res) => {
     }
 
     if (genderdvalidation) {
-      const allowedgenders = ["male", "female", "others"].includes(data.gender);
+      const allowedgenders = [
+        "male",
+        "Male",
+        "MALE",
+        "Female",
+        "FEMALE",
+        "female",
+        "OTHERS",
+        "Others",
+        "others",
+      ].includes(data.gender);
       if (!allowedgenders) {
         throw new Error("Invalid Gender data");
       }
@@ -124,10 +131,10 @@ ProfileRoute.patch("/profile/edit", UserAuth, async (req, res) => {
     }
 
     if (skillsvalidation) {
-      if (data.skills.length > 11) {
-        throw new Error("skills limit is existed plz enter below 10 skills ");
+      if (data.skills.length > 50) {
+        throw new Error("skills limit is existed ");
       }
-      if (data.skills.length < 2) {
+      if (data.skills.length < 10) {
         throw new Error("plz enter atleast 2 skills ");
       }
       LoggedInUser.skills = data.skills;
@@ -148,10 +155,6 @@ ProfileRoute.patch("/profile/edit", UserAuth, async (req, res) => {
     }
 
     if (agevalidation) {
-      if (typeof data.age !== "number") {
-        throw new Error("Age must be a number");
-      }
-
       if (data.age > 100) {
         throw new Error(" Age must be below 100");
       }

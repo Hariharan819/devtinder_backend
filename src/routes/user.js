@@ -116,7 +116,11 @@ UserRouter.get("/feed", UserAuth, async (req, res) => {
       .skip(skip)
       .limit(limit);
 
-    res.send(feedusers);
+    // res.send(feedusers);
+    res.json({
+      message: "Here is your Feed",
+      data: feedusers,
+    });
   } catch (err) {
     res.status(400).send("Error: " + err.message);
   }

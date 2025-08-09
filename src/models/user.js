@@ -47,7 +47,19 @@ const Userschema = new mongoose.Schema(
       //refer documentation
 
       validate(value) {
-        if (!["male", "female", "others"].includes(value)) {
+        if (
+          ![
+            "male",
+            "Male",
+            "MALE",
+            "Female",
+            "FEMALE",
+            "female",
+            "OTHERS",
+            "Others",
+            "others",
+          ].includes(value)
+        ) {
           throw new Error("Invalid Gender data");
         }
       },
@@ -76,7 +88,7 @@ const Userschema = new mongoose.Schema(
   {
     //user created data time
     timestamps: true,
-  }
+  },
 );
 
 Userschema.methods.getjwt = function () {

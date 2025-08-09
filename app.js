@@ -11,8 +11,9 @@ app.use(cookieParser());
 app.use(
   cors({
     origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
-  })
+  }),
 );
 //require  our db model
 
@@ -21,7 +22,7 @@ const ProfileRoute = require("./src/routes/ProfileRoute");
 const RequestRouter = require("./src/routes/request");
 const UserRouter = require("./src/routes/user");
 app.use("/", AuthRoute);
-app.use("/", ProfileRoute);
+app.use("/profile", ProfileRoute);
 app.use("/", RequestRouter);
 app.use("/", UserRouter);
 
