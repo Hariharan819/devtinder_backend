@@ -131,13 +131,25 @@ ProfileRoute.patch("/edit", UserAuth, async (req, res) => {
     }
 
     if (skillsvalidation) {
-      if (data.skills.length > 50) {
-        throw new Error("skills limit is existed ");
+      let skillsArray = data.skills;
+
+      // Convert comma-separated string to array
+      if (typeof skillsArray === "string") {
+        skillsArray = skillsArray
+          .split(",") // split into array
+          .map((s) => s.trim()) // remove spaces
+          .filter(Boolean); // remove empty entries
       }
-      if (data.skills.length < 10) {
-        throw new Error("plz enter atleast 2 skills ");
+      // Validation
+      if (skillsArray.length > 50) {
+        throw new Error("Skills limit exceeded");
       }
-      LoggedInUser.skills = data.skills;
+      if (skillsArray.length < 2) {
+        throw new Error("Please enter at least 2 skills");
+      }
+
+      // Save
+      LoggedInUser.skills = skillsArray;
       await LoggedInUser.save();
     }
 
@@ -169,7 +181,11 @@ ProfileRoute.patch("/edit", UserAuth, async (req, res) => {
     //   LoggedInUser[k] = data[k];
     // });
     // await LoggedInUser.save();
-    res.send(`${LoggedInUser.firstName} , your profile has been updated`);
+    // res.send(`${LoggedInUser.firstName} , your profile has been updated`);
+    res.json({
+      message: `${LoggedInUser.firstName}, your profile has been updated`,
+      user: LoggedInUser,
+    });
   } catch (error) {
     res.status(404).send(error.message);
   }
